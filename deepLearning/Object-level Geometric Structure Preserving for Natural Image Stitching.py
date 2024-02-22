@@ -25,8 +25,11 @@ def alignment_term(vertices, feature_point_pairs):
         energy += torch.norm(ve_p - ve_transformed_p)**2
 
     return energy
-    
-def global_similarity_term(edges, weights, scales, rotations):
+
+def global_similarity_term(edges, 
+                            weights, 
+                            scales, 
+                            rotations):
     """
     Calculate the energy of the global similarity term based on the given edges, weights, scales, and rotations.
 
@@ -75,7 +78,9 @@ def robust_standardization(time_series):
     return standardized_series
 
 
-def local_similarity_term(vertices, edges, similarity_transformations):
+def local_similarity_term(vertices, 
+                            edges, 
+                            similarity_transformations):
     """
     Calculate the energy of the local similarity term as described in the paper
     "Object-level Geometric Structure Preserving for Natural Image Stitching."
