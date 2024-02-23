@@ -118,7 +118,7 @@ def local_similarity_term(vertices,
         energy += torch.norm((vej - vk) - torch.matmul(Sjk, (vk - vj).unsqueeze(1)).squeeze())**2
 
     return energy
-    
+
 def psi_ges(omega, E):
     """
     Calculate the expression ∑_{β=1}^{Nc} ∑_{α=1}^{Ns} ω_{βα}E_{βα}.
@@ -136,3 +136,36 @@ def psi_ges(omega, E):
     result = torch.sum(torch.mul(omega_tensor, E_tensor))
     
     return result.item()
+
+def objective_function(vertices, 
+                        edges, 
+                        similarity_transformations, 
+                        omega, 
+                        E, 
+                        feature_point_pairs, 
+                        lambda_a,  
+                        lambda_l):
+    """
+    Calculate the objective function value based on alignment, global similarity, local similarity, and GES energies using PyTorch.
+
+    Parameters:
+    - vertices (torch.Tensor): Tensor of vertices.
+    - edges (torch.Tensor): Tensor of edges.
+    - similarity_transformations (torch.Tensor): Tensor of similarity transformations.
+    - omega (torch.Tensor): Tensor for the alignment term.
+    - E (torch.Tensor): Tensor for the GES term.
+    - feature_point_pairs (torch.Tensor): Tensor of feature point pairs.
+    - lambda_a (float): Weight for the global similarity term.
+    - lambda_l (float): Weight for the GES term.
+
+    Returns:
+    - torch.Tensor: Objective function value.
+    """
+    alignment_energy = alignment_term(vertices, feature_point_pairs)
+    global_similarity_energy = global_similarity_term(edges, weights, scales, rotations)
+    local_similarity_energy = local_similarity_term(vertices, edges, similarity_transformations)
+    ges_energy = psi_ges(omega, E)
+
+    objective = alignment_energy + lambda_a * global_similarity_energy + lambda_g * local_similarity_energy + lambda_l * ges_energy
+    
+    return objective
