@@ -4,7 +4,16 @@ import torch.nn as nn
 
 class GeometricStructurePreservation:
     
-    def __init__(self, vertices_dim, edges, similarity_transformations, omega_shape, E_shape, feature_point_pairs, lambda_a, lambda_g, lambda_l):
+    def __init__(self, 
+                vertices_dim, 
+                edges, 
+                similarity_transformations, 
+                omega_shape, 
+                E_shape, 
+                feature_point_pairs, 
+                lambda_a, 
+                lambda_g, 
+                lambda_l):
 
         self.vertices = torch.rand(vertices_dim, requires_grad=True)
         self.edges = edges
@@ -30,12 +39,8 @@ class GeometricStructurePreservation:
         energy = 0.0
 
         for p, transformed_p in feature_point_pairs:
-            ve_p = torch.matmul(vertices[p], torch.ones(4, 1)).squeeze()  # Linear combination of four vertex positions
-
-            # Bilinear interpolation for transformed position
+            ve_p = torch.matmul(vertices[p], torch.ones(4, 1)).squeeze()  
             ve_transformed_p = torch.matmul(vertices[transformed_p], torch.ones(4, 1)).squeeze()
-
-            # Calculate squared distance and accumulate energy
             energy += torch.norm(ve_p - ve_transformed_p)**2
 
         return energy
@@ -56,16 +61,14 @@ class GeometricStructurePreservation:
         energy = 0.0
 
         for ej, weight, scale, rotation in zip(edges, weights, scales, rotations):
-            # Compute parameters c(e) and s(e) for similarity
             ce = scale * torch.cos(rotation)
             se = scale * torch.sin(rotation)
-
-            # Calculate energy contribution for each edge and accumulate
             energy += weight**2 * ((ce - scale)**2 + (se - scale)**2)
 
         return energy
 
     def local_similarity_term(self, vertices, edges, similarity_transformations):
+    
         """
         Calculate the energy of the local similarity term as described in the paper
         "Object-level Geometric Structure Preserving for Natural Image Stitching."
@@ -88,6 +91,7 @@ class GeometricStructurePreservation:
         Returns:
         - energy (torch.Tensor): Energy of the local similarity term.
         """
+
         energy = 0.0
 
         for edge in edges:
@@ -105,6 +109,7 @@ class GeometricStructurePreservation:
         return energy
 
     def psi_ges(self, omega, E):
+
         """
         Calculate the expression ∑_{β=1}^{Nc} ∑_{α=1}^{Ns} ω_{βα}E_{βα}.
 
@@ -115,6 +120,7 @@ class GeometricStructurePreservation:
         Returns:
         - float: Result of the summation of the element-wise product of omega and E.
         """
+
         omega_tensor = torch.tensor(omega, dtype=torch.float32)
         E_tensor = torch.tensor(E, dtype=torch.float32)
 
@@ -123,6 +129,7 @@ class GeometricStructurePreservation:
         return result.item()
 
     def objective_function(self, vertices, edges, similarity_transformations, omega, E, feature_point_pairs, lambda_a, lambda_g, lambda_l):
+ 
         """
         Calculate the objective function value based on alignment, global similarity, local similarity, and GES energies using PyTorch.
 
@@ -139,6 +146,7 @@ class GeometricStructurePreservation:
         Returns:
         - torch.Tensor: Objective function value.
         """
+        
         alignment_energy = self.alignment_term(vertices, feature_point_pairs)
         global_similarity_energy = self.global_similarity_term(edges, weights, scales, rotations)
         local_similarity_energy = self.local_similarity_term(vertices, edges, similarity_transformations)
