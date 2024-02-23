@@ -118,3 +118,21 @@ def local_similarity_term(vertices,
         energy += torch.norm((vej - vk) - torch.matmul(Sjk, (vk - vj).unsqueeze(1)).squeeze())**2
 
     return energy
+    
+def psi_ges(omega, E):
+    """
+    Calculate the expression ∑_{β=1}^{Nc} ∑_{α=1}^{Ns} ω_{βα}E_{βα}.
+
+    Parameters:
+    - omega (list of lists): Matrix representing ω with dimensions (Nc x Ns).
+    - E (list of lists): Matrix representing E with dimensions (Nc x Ns).
+
+    Returns:
+    - float: Result of the summation of the element-wise product of omega and E.
+    """
+    omega_tensor = torch.tensor(omega, dtype=torch.float32)
+    E_tensor = torch.tensor(E, dtype=torch.float32)
+    
+    result = torch.sum(torch.mul(omega_tensor, E_tensor))
+    
+    return result.item()
