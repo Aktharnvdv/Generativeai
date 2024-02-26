@@ -1,3 +1,6 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
 import torch
 import numpy as np
 import torch.nn as nn
@@ -128,7 +131,16 @@ class GeometricStructurePreservation:
 
         return result.item()
 
-    def objective_function(self, vertices, edges, similarity_transformations, omega, E, feature_point_pairs, lambda_a, lambda_g, lambda_l):
+    def objective_function(self, 
+                            vertices, 
+                            edges, 
+                            similarity_transformations, 
+                            omega, 
+                            E, 
+                            feature_point_pairs, 
+                            lambda_a, 
+                            lambda_g, 
+                            lambda_l):
  
         """
         Calculate the objective function value based on alignment, global similarity, local similarity, and GES energies using PyTorch.
